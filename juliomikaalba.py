@@ -35,7 +35,7 @@ def obtener_gasto_si_no(mensaje):
     if pregunta_si_no(mensaje):
         while True:
             try:
-                gasto = float(input("¿Cuánto paga? "))
+                gasto = float(input("¿Cuánto paga mensualmente? "))
                 if gasto >= 0:
                     return gasto
                 else:
@@ -86,7 +86,7 @@ def calcular_subcategorias(categoria):
         subcategorias = ["LUZ", "AGUA", "GAS"]
     elif categoria == "COMUNICACION":
         subcategorias = ["CREDITO", "INTERNET"]
-
+    
     prioridades = {}
     for subcategoria in subcategorias:
         while True:
@@ -99,7 +99,7 @@ def calcular_subcategorias(categoria):
                     print("Por favor, ingrese una prioridad válida y no repetida.")
             except ValueError:
                 print("Por favor, ingrese un número válido.")
-
+    
     n = len(prioridades)
     porcentaje_subcategoria = {
         1: {1: 100},
@@ -111,20 +111,21 @@ def calcular_subcategorias(categoria):
 def main():
     monto = obtener_monto()
     porcentaje_ahorro = obtener_porcentaje_ahorro()
-    ahorro = monto * porcentaje_ahorro
 
+    
     alquiler = obtener_gasto_si_no("¿Paga alquiler?")
     deudas = obtener_gasto_si_no("¿Tiene deudas económicas o educativas? Por ejemplo, deudas bancarias o cuotas del colegio/universidad")
     actividades = obtener_gasto_si_no("¿Realiza actividades extracurriculares como gimnasio, danza, ajedrez, etc?")
-
+    
     total_1 = monto - alquiler - deudas - actividades
     total_2 = total_1 * porcentaje_ahorro
     total_final = total_1 - total_2
+    ahorro = total_2
 
     seleccionadas = seleccionar_categorias()
     prioridades = prioridad_categorias(seleccionadas)
     porcentajes = calcular_porcentajes(prioridades)
-
+    
     resultados = {}
     for categoria, porcentaje in porcentajes.items():
         if categoria in ["SERVICIOS BASICOS", "COMUNICACION"]:
@@ -132,20 +133,19 @@ def main():
             resultados[categoria] = {subcategoria: total_final * porcentaje * porcentaje_subcategoria for subcategoria, porcentaje_subcategoria in subcategorias.items()}
         else:
             resultados[categoria] = total_final * porcentaje
-
+    
     resultados["AHORRO"] = ahorro
     resultados["ALQUILER"] = alquiler
     resultados["ACTIVIDADES EXTRACURRICULARES"] = actividades
     resultados["DEUDAS"] = deudas
-
-    print("\nEste sería tu plan de gastos mensual si quisieras ahorrar: ", porcentaje_ahorro, "%")
+    
+    data = []
     for categoria, valor in resultados.items():
         if isinstance(valor, dict):
-            print(f"{categoria}:")
             for subcategoria, subvalor in valor.items():
-                print(f"  {subcategoria}: {subvalor:.2f} Bs")
+                data.append([categoria, subcategoria, subvalor])
         else:
-            print(f"{categoria}: {valor:.2f} Bs")
-
+            data.append([categoria, '', valor])
+    
 if __name__ == "__main__":
     main()
